@@ -5,6 +5,7 @@ import { useState } from "react";
 interface Plan {
   name: string;
   price: string;
+  priceId: string;
   interval: string;
   features: readonly string[];
 }
@@ -28,11 +29,33 @@ export function PricingCard({ plan, isLoggedIn }: PricingCardProps) {
     setError(null);
 
     try {
-      const res = await fetch("/api/stripe/checkout", { method: "POST" });
-      const data = await res.json();
+      const { priceId } = plan;
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ priceId })
+      });
 
-      if (!res.ok) throw new Error(data.error || "Failed to create checkout");
-      if (data.url) window.location.href = data.url;
+      const contentType = res.headers.get("content-type") ?? "";
+
+      // If the API ever returns a redirect, follow it in the browser
+      if (res.redirected) {
+        window.location.href = res.url;
+        return;
+      }
+
+      // Prefer JSON when it's actually JSON
+      if (contentType.includes("application/json")) {
+        const data = (await res.json()) as { url?: string; error?: string };
+        if (!res.ok) throw new Error(data.error ?? `Checkout failed (${res.status})`);
+        if (!data.url) throw new Error("Checkout URL missing from response.");
+        window.location.href = data.url;
+        return;
+      }
+
+      // Otherwise read text so we don't crash on res.json()
+      const text = await res.text();
+      throw new Error(text || `Checkout failed (${res.status})`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
