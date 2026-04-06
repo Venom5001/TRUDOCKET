@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("landing page loads and has pricing link", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle(/SaaS MVP/);
+  await expect(page).toHaveTitle(/MotionForge/);
   const pricingLink = page.getByRole("link", { name: /pricing/i });
   await expect(pricingLink).toBeVisible();
 });
