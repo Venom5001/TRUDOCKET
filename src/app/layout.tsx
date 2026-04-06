@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SaaS MVP",
-  description: "Modern SaaS starter with Next.js, Auth, Prisma, and Stripe",
+  title: "MotionForge",
+  description:
+    "AI-assisted legal motion drafting. Generate structured motion drafts, save documents, and manage your cases.",
 };
 
 export default function RootLayout({

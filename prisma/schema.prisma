@@ -16,6 +16,9 @@ model User {
   accounts         Account[]
   sessions         Session[]
   subscriptions    Subscription[]
+  cases            Case[]
+  documents        Document[]
+  usageEvents      UsageEvent[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 }
@@ -65,4 +68,53 @@ model Subscription {
   user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
+}
+
+model Case {
+  id           String     @id @default(cuid())
+  userId       String
+  title        String
+  jurisdiction String
+  caseType     String
+  partyRole    String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents    Document[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model Document {
+  id                String   @id @default(cuid())
+  userId            String
+  caseId            String?
+  title             String
+  documentType      String   @default("motion")
+  jurisdiction      String
+  caseType          String
+  motionType        String
+  partyRole         String
+  facts             String
+  reliefRequested   String
+  additionalContext String?
+  generatedContent  String
+  status            String   @default("draft")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  case              Case?    @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@index([caseId])
+}
+
+model UsageEvent {
+  id         String   @id @default(cuid())
+  userId     String
+  actionType String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
 }

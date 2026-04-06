@@ -10,7 +10,12 @@ export const PLANS = {
     priceId: process.env.STRIPE_PRICE_PRO_MONTHLY_ID!,
     price: "$9",
     interval: "month",
-    features: ["Unlimited projects", "Priority support", "Advanced analytics"],
+    features: [
+      "Unlimited motion generations",
+      "Full document history",
+      "Case management",
+      "Priority support",
+    ],
   },
 } as const;
 
