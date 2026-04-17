@@ -1,35 +1,71 @@
 "use server";
 
-import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserEntitlements } from "@/lib/entitlements";
-import { generateMotionDraft } from "@/lib/services/motion-generator";
+import { generateMotionDraft, getClarifyingQuestions } from "@/lib/services/motion-generator";
+import { parseMotionForm } from "@/lib/services/motion-validation";
+import type { CaseLawSource } from "@/lib/services/motion-generator";
 
-const motionSchema = z.object({
-  caseTitle: z.string().min(1, "Case title is required").max(200),
-  jurisdiction: z.string().min(1, "Jurisdiction is required").max(100),
-  caseType: z.string().min(1, "Case type is required").max(100),
-  motionType: z.string().min(1, "Motion type is required").max(100),
-  partyRole: z.string().min(1, "Party role is required").max(100),
-  facts: z
-    .string()
-    .min(10, "Facts must be at least 10 characters")
-    .max(10000),
-  reliefRequested: z
-    .string()
-    .min(5, "Relief requested is required")
-    .max(5000),
-  additionalContext: z.string().max(5000).optional(),
-});
+// ─── Action state types ───────────────────────────────────────────────────────
 
 export type ActionState =
   | { status: "idle" }
   | { status: "error"; error: string }
   | {
       status: "success";
-      document: { id: string; title: string; generatedContent: string };
+      document: {
+        id: string;
+        title: string;
+        generatedContent: string;
+        sources: CaseLawSource[];
+        citationsRemoved: number;
+        citationsUnavailable: boolean;
+        providerMeta: { provider: string; model: string } | null;
+      };
     };
+
+export type QuestionsState =
+  | { status: "idle" }
+  | { status: "error"; error: string }
+  | { status: "questions"; questions: string[] };
+
+// ─── Clarifying questions action ──────────────────────────────────────────────
+
+export async function getClarifyingQuestionsAction(
+  _prevState: QuestionsState,
+  formData: FormData
+): Promise<QuestionsState> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { status: "error", error: "Not authenticated." };
+  }
+
+  const parsed = parseMotionForm(formData);
+  if (!parsed.success) {
+    const firstError = Object.values(parsed.error.flatten().fieldErrors).flat()[0];
+    return { status: "error", error: firstError ?? "Validation failed." };
+  }
+
+  const questions = await getClarifyingQuestions(parsed.data);
+
+  if (questions.length === 0) {
+    return {
+      status: "questions",
+      questions: [
+        "Are there any prior court rulings or orders in this matter that are relevant?",
+        "What specific legal standard applies to this motion in your jurisdiction?",
+        "Are there any procedural deadlines or timing constraints to note?",
+        "What is the strongest opposing argument you anticipate from the other side?",
+        "Are there any key exhibits or evidence that should be referenced?",
+      ],
+    };
+  }
+
+  return { status: "questions", questions };
+}
+
+// ─── Create motion action ─────────────────────────────────────────────────────
 
 export async function createMotionAction(
   _prevState: ActionState,
@@ -41,22 +77,9 @@ export async function createMotionAction(
   }
   const userId = session.user.id;
 
-  const raw = {
-    caseTitle: formData.get("caseTitle") as string,
-    jurisdiction: formData.get("jurisdiction") as string,
-    caseType: formData.get("caseType") as string,
-    motionType: formData.get("motionType") as string,
-    partyRole: formData.get("partyRole") as string,
-    facts: formData.get("facts") as string,
-    reliefRequested: formData.get("reliefRequested") as string,
-    additionalContext: (formData.get("additionalContext") as string) || undefined,
-  };
-
-  const parsed = motionSchema.safeParse(raw);
+  const parsed = parseMotionForm(formData);
   if (!parsed.success) {
-    const firstError = Object.values(
-      parsed.error.flatten().fieldErrors
-    ).flat()[0];
+    const firstError = Object.values(parsed.error.flatten().fieldErrors).flat()[0];
     return { status: "error", error: firstError ?? "Validation failed." };
   }
 
@@ -64,14 +87,29 @@ export async function createMotionAction(
   if (!entitlements?.canGenerate) {
     return {
       status: "error",
-      error:
-        "You've used all 2 free generations. Upgrade to Pro for unlimited access.",
+      error: "You've used all 2 free generations. Upgrade to Pro for unlimited access.",
     };
   }
 
   const data = parsed.data;
 
-  const { title, content } = await generateMotionDraft(data);
+  // Citations mode is Pro-only
+  const wantsCitations = formData.get("includeCitations") === "on";
+  const includeCitations = wantsCitations && entitlements.isPro;
+
+  let generationResult;
+  try {
+    generationResult = await generateMotionDraft(data, {
+      includeCitations,
+      mode: includeCitations ? "citations" : "draft",
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Generation failed";
+    return { status: "error", error: msg };
+  }
+
+  const { title, content, sources, providerMeta, citationsRemoved, citationsUnavailable } =
+    generationResult;
 
   // Find or create a Case (match by title + jurisdiction + caseType for this user)
   let caseRecord = await prisma.case.findFirst({
@@ -108,6 +146,8 @@ export async function createMotionAction(
       reliefRequested: data.reliefRequested,
       additionalContext: data.additionalContext,
       generatedContent: content,
+      sources: sources.length > 0 ? (sources as object[]) : undefined,
+      providerMeta: providerMeta ?? undefined,
       status: "generated",
     },
   });
@@ -122,6 +162,10 @@ export async function createMotionAction(
       id: document.id,
       title: document.title,
       generatedContent: content,
+      sources,
+      citationsRemoved,
+      citationsUnavailable,
+      providerMeta,
     },
   };
 }

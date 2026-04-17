@@ -1,14 +1,25 @@
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { getUserEntitlements, FREE_GENERATION_LIMIT } from "@/lib/entitlements";
 import Link from "next/link";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export default async function AppPage() {
   const session = await auth();
   if (!session?.user) {
     redirect("/api/auth/signin");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { onboardedAt: true },
+  });
+
+  if (!user?.onboardedAt) {
+    redirect("/app/onboarding");
   }
 
   const entitlements = await getUserEntitlements();

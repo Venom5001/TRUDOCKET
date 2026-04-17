@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import { getUserEntitlements } from "@/lib/entitlements";
 import { CreateMotionForm } from "./CreateMotionForm";
 
+// AI provider calls use Node.js-only APIs (AbortController timers, long-lived
+// fetch). Force the Node.js runtime explicitly so the edge runtime is never
+// selected for this segment or its server actions.
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export default async function CreateMotionPage() {
