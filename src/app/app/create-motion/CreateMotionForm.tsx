@@ -420,8 +420,7 @@ export function CreateMotionForm({
         )}
 
         <div className="bg-amber-950/40 border border-amber-700/50 rounded-lg p-3 text-sm text-amber-300">
-          ⚠ MotionForge generates drafting templates only — not legal advice.
-          Always have a licensed attorney review before filing.
+            ⚠ TruDocket generates drafting templates only — not legal advice.
         </div>
 
         {/* Action buttons */}

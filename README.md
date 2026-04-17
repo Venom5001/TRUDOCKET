@@ -2,35 +2,127 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+1. Copy local environment settings:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Fill `.env.local` with your local test credentials and database URL.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Install dependencies and run locally:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm ci
+npm run dev
+```
 
-## Learn More
+4. Open [http://localhost:3000](http://localhost:3000).
 
-To learn more about Next.js, take a look at the following resources:
+## Required Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create `.env.local` from `.env.example` for local development. For production, use `.env.production.example` as a template.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Required variables:
 
-## Deploy on Vercel
+- `APP_URL` — app base URL, e.g. `http://localhost:3000` or `https://your-domain.com`
+- `DATABASE_URL` — Postgres connection string for Prisma
+- `AUTH_SECRET` — strong random string used by NextAuth
+- `AUTH_URL` — full public auth callback URL for production
+- `AUTH_TRUST_HOST=true` — required for Vercel-style host trust handling
+- `GITHUB_CLIENT_ID` — GitHub OAuth app client ID
+- `GITHUB_CLIENT_SECRET` — GitHub OAuth app client secret
+- `STRIPE_SECRET_KEY` — Stripe secret key (test keys locally, live keys in production)
+- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret
+- `STRIPE_PRICE_PRO_MONTHLY_ID` — Stripe price ID for the Pro monthly plan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Optional keys that may be added later:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `COURLISTENER_API_TOKEN`
+
+## Local Development
+
+This project uses `next dev` for local development and `npm run test:all` to validate the full suite.
+
+Run the full setup locally:
+
+```bash
+npm ci
+cp .env.example .env.local
+# edit .env.local with your local values
+npm run dev
+```
+
+## Production Deploy (Vercel)
+
+1. Push the repository to GitHub.
+2. Create a Vercel project and connect your GitHub repository.
+3. Add the required production environment variables in Vercel:
+   - `APP_URL`
+   - `DATABASE_URL`
+   - `AUTH_SECRET`
+   - `AUTH_URL`
+   - `AUTH_TRUST_HOST`
+   - `GITHUB_CLIENT_ID`
+   - `GITHUB_CLIENT_SECRET`
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `STRIPE_PRICE_PRO_MONTHLY_ID`
+4. Set `AUTH_TRUST_HOST=true` in Vercel.
+5. Confirm `APP_URL` and `AUTH_URL` both point to your production URL, for example `https://your-domain.com`.
+6. Deploy the project.
+
+### Vercel Build Notes
+
+A `postinstall` script now runs `npm run prisma:generate`, so the Prisma client is generated automatically during install.
+
+If you need to run database migrations in production, use:
+
+```bash
+npx prisma migrate deploy
+```
+
+## Stripe Live Mode Setup
+
+For production Stripe live mode:
+
+1. Create a Stripe product named `Pro`.
+2. Add a monthly recurring price and copy the price ID.
+3. Add the live secret key to `STRIPE_SECRET_KEY`.
+4. Add the webhook signing secret to `STRIPE_WEBHOOK_SECRET`.
+5. Add the price ID to `STRIPE_PRICE_PRO_MONTHLY_ID`.
+
+### Stripe webhook endpoint
+
+Use the production endpoint:
+
+```text
+https://<YOUR_DOMAIN>/api/stripe/webhook
+```
+
+Select these webhook event types in Stripe:
+
+- `checkout.session.completed`
+- `customer.subscription.created`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+
+## GitHub Actions CI
+
+A CI workflow is configured in `.github/workflows/ci.yml`.
+It runs on PRs and pushes to `main`, installs dependencies with `npm ci`, and runs `npm run test:all`.
+
+## GitHub OAuth App Setup
+
+For production GitHub auth:
+
+1. Create a GitHub OAuth App in GitHub settings.
+2. Set the callback URL to:
+
+```text
+https://<YOUR_DOMAIN>/api/auth/callback/github
+```
+
+3. Use the generated client ID and secret in Vercel environment variables.

@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MotionForge",
+  title: "TruDocket",
   description:
-    "AI-assisted legal motion drafting. Generate structured motion drafts, save documents, and manage your cases.",
+    "TruDocket helps pro se users and small firms generate structured motion drafts with confidence.",
 };
 
 export default function RootLayout({

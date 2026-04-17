@@ -5,23 +5,21 @@ export default function HomePage() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white px-4">
       <div className="max-w-2xl text-center space-y-6">
         <div className="inline-flex items-center gap-2 bg-indigo-950/60 border border-indigo-700/50 rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-2">
-          ⚖️ Drafting aid only — not legal advice
+          ⚖️ Drafting assistance only — not legal advice
         </div>
         <h1 className="text-5xl font-bold tracking-tight">
-          Legal motion drafts,{" "}
-          <span className="text-indigo-400">structured instantly</span>
+          Draft motions with confidence—without starting from a blank page.
         </h1>
         <p className="text-xl text-gray-400">
-          MotionForge helps attorneys and legal professionals generate
-          structured motion drafts in seconds. Start free, upgrade for
-          unlimited drafts and full case management.
+          Guided drafting for pro se and small firms. Drafting assistance
+          only—not legal advice.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link
             href="/api/auth/signin"
             className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors"
           >
-            Get Started Free
+            Try TruDocket (free)
           </Link>
           <Link
             href="/pricing"

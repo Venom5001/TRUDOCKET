@@ -22,7 +22,7 @@ export default async function AppLayout({
               href="/app"
               className="text-indigo-400 font-bold text-lg tracking-tight"
             >
-              MotionForge
+              TruDocket
             </Link>
             <div className="hidden sm:flex items-center gap-4 text-sm">
               <Link

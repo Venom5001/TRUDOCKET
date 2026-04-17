@@ -22,7 +22,7 @@ export default async function CreateMotionPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">New Motion Draft</h1>
         <p className="text-gray-400">
-          Fill in the details below and MotionForge will generate a structured
+          Fill in the details below and TruDocket will generate a structured
           motion draft for your review.
         </p>
       </div>
