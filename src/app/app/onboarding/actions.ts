@@ -83,7 +83,8 @@ export async function generateOnboardingDraftAction(
   if (!entitlements?.canGenerate) {
     return {
       status: "error",
-      error: "You've used all 2 free generations. Upgrade to Pro for unlimited access.",
+      error:
+        "You've used both free drafts. Upgrade to Pro to keep generating unlimited motion drafts.",
     };
   }
 
@@ -93,8 +94,18 @@ export async function generateOnboardingDraftAction(
   try {
     generationResult = await generateMotionDraft(inputs, { mode: "draft" });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Generation failed";
-    return { status: "error", error: message };
+    const message =
+      err instanceof Error ? err.message : "Draft generation failed";
+    const isProviderError =
+      message.includes("API") ||
+      message.includes("provider") ||
+      message.includes("LLM");
+    return {
+      status: "error",
+      error: isProviderError
+        ? "The drafting service is temporarily unavailable. Please try again in a moment."
+        : message,
+    };
   }
 
   const caseRecord =

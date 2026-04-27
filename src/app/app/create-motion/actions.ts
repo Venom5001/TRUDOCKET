@@ -87,7 +87,8 @@ export async function createMotionAction(
   if (!entitlements?.canGenerate) {
     return {
       status: "error",
-      error: "You've used all 2 free generations. Upgrade to Pro for unlimited access.",
+      error:
+        "You've used both free drafts. Upgrade to Pro to keep generating unlimited motion drafts.",
     };
   }
 
@@ -104,8 +105,16 @@ export async function createMotionAction(
       mode: includeCitations ? "citations" : "draft",
     });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Generation failed";
-    return { status: "error", error: msg };
+    const msg =
+      err instanceof Error ? err.message : "Draft generation failed";
+    const isProviderError =
+      msg.includes("API") || msg.includes("provider") || msg.includes("LLM");
+    return {
+      status: "error",
+      error: isProviderError
+        ? "The drafting service is temporarily unavailable. Please try again in a moment."
+        : msg,
+    };
   }
 
   const { title, content, sources, providerMeta, citationsRemoved, citationsUnavailable } =

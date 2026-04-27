@@ -1,19 +1,31 @@
+export const dynamic = "force-dynamic";
+
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getUserSubscription } from "@/lib/subscription";
 import { isPro } from "@/lib/stripe";
 import { BillingPortalButton } from "@/components/billing-portal-button";
+import { BillingSuccessPoller } from "@/components/billing-success-poller";
 import Link from "next/link";
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string }>;
+}) {
   const session = await auth();
 
   if (!session?.user) {
     redirect("/api/auth/signin");
   }
 
-  const subscription = await getUserSubscription();
+  const [subscription, params] = await Promise.all([
+    getUserSubscription(),
+    searchParams,
+  ]);
+
   const hasPro = isPro(subscription?.status);
+  const showSuccess = params.success === "1";
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
@@ -27,6 +39,8 @@ export default async function BillingPage() {
           </Link>
           <h1 className="text-3xl font-bold">Billing</h1>
         </div>
+
+        <BillingSuccessPoller isPro={hasPro} success={showSuccess} />
 
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
           {hasPro && subscription ? (

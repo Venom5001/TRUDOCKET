@@ -22,15 +22,26 @@ export default async function DocumentsPage() {
         <p className="text-4xl">📄</p>
         <h1 className="text-2xl font-bold">My Documents</h1>
         <p className="text-gray-400">
-          Document history is available on the Pro plan. Upgrade to save and
-          revisit all your motion drafts.
+          Every draft you generate is saved — but browsing and revisiting your
+          full history is a Pro feature. Upgrade once and your entire archive
+          is waiting for you.
         </p>
         <Link
           href="/pricing"
           className="inline-block px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors"
         >
-          Upgrade to Pro
+          Unlock document history
         </Link>
+        <p className="text-xs text-gray-600">
+          Or{" "}
+          <Link
+            href="/app/create-motion"
+            className="underline hover:text-gray-400"
+          >
+            generate a new draft
+          </Link>{" "}
+          on the free plan.
+        </p>
       </div>
     );
   }

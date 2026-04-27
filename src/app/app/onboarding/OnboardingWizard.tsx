@@ -178,6 +178,11 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
 
         {step === 1 && (
           <form onSubmit={handleStep1Submit} className="space-y-6">
+            <div className="bg-indigo-950/20 border border-indigo-800/40 rounded-xl px-4 py-3 text-sm text-indigo-300">
+              Messy is fine — bullet points, fragments, and rough notes all
+              work. We&apos;ll structure everything into a proper draft.
+            </div>
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -229,6 +234,10 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
                   placeholder="Describe the relevant facts of the case…"
                   className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
                 />
+                <p className="mt-1.5 text-xs text-gray-500">
+                  Dates, names, what happened — in any order. No need for
+                  complete sentences.
+                </p>
               </div>
 
               <div className="sm:col-span-2">
@@ -242,6 +251,11 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
                   placeholder="Describe the specific relief you are requesting…"
                   className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
                 />
+                <p className="mt-1.5 text-xs text-gray-500">
+                  What do you want the court to do? Dismiss the case, compel
+                  discovery, issue an injunction — even a rough description
+                  works.
+                </p>
               </div>
 
               <div>
@@ -477,9 +491,41 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
 
                 <div className="rounded-3xl border border-gray-800 bg-gray-900 p-6 space-y-4">
                   <h3 className="text-lg font-semibold">Generated motion preview</h3>
-                  <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-gray-200">
+                  <pre className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-gray-200">
                     {draftState.document.generatedContent}
                   </pre>
+                </div>
+
+                {/* Next-actions bar */}
+                <div className="rounded-xl border border-gray-700 bg-gray-900/60 p-5 space-y-3">
+                  <p className="text-sm font-semibold text-gray-200">What&apos;s next?</p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href="/app/create-motion"
+                      className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Polish tone →
+                    </Link>
+                    <Link
+                      href="/app/create-motion"
+                      className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Add missing sections →
+                    </Link>
+                    {!isPro && (
+                      <Link
+                        href="/pricing"
+                        className="px-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-medium text-white transition-colors"
+                      >
+                        Upgrade for citations + full history →
+                      </Link>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    Use the full Create Motion form to refine the draft, add
+                    case law citations (Pro), and save it to your document
+                    history.
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
@@ -488,7 +534,7 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
                       type="submit"
                       className="px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-semibold transition"
                     >
-                      Finish onboarding
+                      Finish — go to dashboard
                     </button>
                   </form>
                   <form action={skipOnboardingAction} className="inline">
@@ -496,7 +542,7 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
                       type="submit"
                       className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-semibold transition"
                     >
-                      Skip onboarding
+                      Skip setup
                     </button>
                   </form>
                 </div>

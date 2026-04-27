@@ -22,15 +22,26 @@ export default async function CasesPage() {
         <p className="text-4xl">⚖️</p>
         <h1 className="text-2xl font-bold">My Cases</h1>
         <p className="text-gray-400">
-          Case management is available on the Pro plan. Upgrade to organise
-          your motions by case.
+          Stay organised when it matters. Pro members group their motions by
+          case — so everything related to <em>Smith v. Jones</em> stays
+          together and is easy to find.
         </p>
         <Link
           href="/pricing"
           className="inline-block px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold transition-colors"
         >
-          Upgrade to Pro
+          Unlock case management
         </Link>
+        <p className="text-xs text-gray-600">
+          Or{" "}
+          <Link
+            href="/app/create-motion"
+            className="underline hover:text-gray-400"
+          >
+            generate a new draft
+          </Link>{" "}
+          on the free plan.
+        </p>
       </div>
     );
   }
