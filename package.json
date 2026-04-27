@@ -20,9 +20,8 @@
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@types/pg": "^8.18.0",
-    "next": "16.2.0",
+    "next": "16.2.4",
     "next-auth": "^5.0.0-beta.30",
-    "nodemailer": "^7.0.13",
     "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -39,7 +38,7 @@
     "@vitest/coverage-v8": "^4.1.0",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.0",
+    "eslint-config-next": "16.2.4",
     "jsdom": "^29.0.1",
     "prisma": "^7.5.0",
     "tailwindcss": "^4",
@@ -48,6 +47,11 @@
     "vitest": "^4.1.0"
   },
   "overrides": {
-    "effect": "^3.20.0"
+    "effect": "^3.20.0",
+    "lodash": "^4.17.24",
+    "postcss": "^8.5.10",
+    "@hono/node-server": "^1.19.14",
+    "hono": "^4.12.15",
+    "defu": "^6.1.7"
   }
 }
