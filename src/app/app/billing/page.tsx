@@ -16,7 +16,7 @@ export default async function BillingPage({
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   const [subscription, params] = await Promise.all([

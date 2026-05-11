@@ -21,7 +21,7 @@ export function PricingCard({ plan, isLoggedIn }: PricingCardProps) {
 
   async function handleSubscribe() {
     if (!isLoggedIn) {
-      window.location.href = "/api/auth/signin";
+      window.location.href = "/signin?callbackUrl=/pricing";
       return;
     }
 

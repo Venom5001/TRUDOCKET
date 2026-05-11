@@ -48,10 +48,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Allow committing env template
+# Allow committing env templates
 !.env.example
+!.env.production.example
 
 
 # Claude workspace
 .claude/
 
+.env*.local

@@ -1,6 +1,6 @@
 # TruDocket
 
-A Next.js SaaS application with GitHub OAuth, Stripe subscriptions, and Prisma + PostgreSQL.
+A Next.js SaaS application with multi-provider auth (Google, Email/Resend, GitHub), Stripe subscriptions, and Prisma + PostgreSQL.
 
 ## Getting Started (Local)
 
@@ -32,11 +32,15 @@ Required variables:
 - `AUTH_SECRET` — strong random string used by NextAuth
 - `AUTH_URL` — full public URL used for auth callbacks (same as `APP_URL` in production)
 - `AUTH_TRUST_HOST=true` — required for Vercel-style host trust handling
-- `GITHUB_CLIENT_ID` — GitHub OAuth app client ID
-- `GITHUB_CLIENT_SECRET` — GitHub OAuth app client secret
 - `STRIPE_SECRET_KEY` — Stripe secret key (test keys locally, live keys in production)
 - `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret
 - `STRIPE_PRICE_PRO_MONTHLY_ID` — Stripe price ID for the Pro monthly plan
+
+Auth providers — **at least one** must be configured. Each activates automatically when its env vars are present:
+
+- **Google OAuth (primary)** — set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- **Email magic links via Resend** — set `RESEND_API_KEY` and `EMAIL_FROM`
+- **GitHub OAuth (secondary)** — set `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
 
 Optional (AI/external features):
 
@@ -97,17 +101,57 @@ npx dotenv -e .env.production.local -- npx prisma migrate deploy
 
 > The `postinstall` script runs `prisma generate` automatically on every Vercel build. You only need to run `migrate deploy` manually on first deploy and after each schema change.
 
-### Step 3 — Create a GitHub OAuth App
+### Step 3 — Configure Auth Providers
+
+Configure at least one provider. **Google + Email is the recommended combination** for a mainstream SaaS audience.
+
+#### 3a. Google OAuth (recommended primary)
+
+1. Go to **[Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials)**.
+2. Create a new project (or pick an existing one).
+3. **OAuth consent screen** → configure with your app name, support email, and your production domain under **Authorized domains**.
+4. **Credentials → Create credentials → OAuth client ID** → **Web application**.
+5. Under **Authorized redirect URIs**, add exactly:
+
+   ```text
+   https://<YOUR_DOMAIN>/api/auth/callback/google
+   ```
+
+   For local development also add:
+
+   ```text
+   http://localhost:3000/api/auth/callback/google
+   ```
+
+6. Click **Create**, then copy the **Client ID** and **Client secret** into `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+#### 3b. Email Magic Links via Resend (recommended secondary)
+
+1. Sign up at **[resend.com](https://resend.com)** and verify your sending domain (or use the sandbox domain for testing).
+2. Go to **API Keys → Create API Key** with **Sending** permission. Copy it into `RESEND_API_KEY`.
+3. Set `EMAIL_FROM` to a verified sender on your domain, e.g.:
+
+   ```text
+   EMAIL_FROM="TruDocket <no-reply@your-domain.com>"
+   ```
+
+   The sender domain must be verified in Resend (under **Domains**), otherwise sends will be rejected.
+
+No additional NextAuth callback URL is required — magic links are handled internally at `/api/auth/callback/resend`.
+
+#### 3c. GitHub OAuth (secondary / dev-friendly)
 
 1. Go to **GitHub → Settings → Developer settings → OAuth Apps → New OAuth App**.
 2. Set **Homepage URL** to your production URL, e.g. `https://your-app.vercel.app`.
 3. Set **Authorization callback URL** exactly to:
 
-   ```
+   ```text
    https://<YOUR_DOMAIN>/api/auth/callback/github
    ```
 
-4. Click **Register application**, then copy the **Client ID** and generate a **Client secret**.
+4. Click **Register application**, then copy the **Client ID** and generate a **Client secret** into `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`.
+
+> **Note on account linking:** Google and GitHub providers are configured with `allowDangerousEmailAccountLinking: true` so users can sign in with either provider using the same email and get the same account. Resend magic links proves email ownership directly. Disable this in `src/lib/auth.ts` if your threat model requires stricter separation.
 
 ### Step 4 — Create and Configure the Stripe Webhook
 
@@ -132,19 +176,32 @@ npx dotenv -e .env.production.local -- npx prisma migrate deploy
 
 ### Step 5 — Set Vercel Environment Variables
 
-In the Vercel project dashboard under **Settings → Environment Variables**, add all of the following for the **Production** environment:
+In the Vercel project dashboard under **Settings → Environment Variables**, add the following for the **Production** environment.
 
-```
+Always required:
+
+```text
 APP_URL
 DATABASE_URL
 AUTH_SECRET
 AUTH_URL
 AUTH_TRUST_HOST
-GITHUB_CLIENT_ID
-GITHUB_CLIENT_SECRET
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
 STRIPE_PRICE_PRO_MONTHLY_ID
+```
+
+At least one auth provider (add both env vars for any provider you enable):
+
+```text
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+
+RESEND_API_KEY
+EMAIL_FROM
+
+GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET
 ```
 
 Value notes:
@@ -172,7 +229,9 @@ Confirm the deployment log shows no errors before running the smoke test.
 
 Verify the full auth → generate → subscribe → Pro path after each production deploy:
 
-- [ ] **Sign in** — visit the production URL and click **Sign in with GitHub**; you are redirected back and land on `/app` with your profile visible.
+- [ ] **Sign in (Google)** — visit the production URL → `/signin` → click **Continue with Google**; you are redirected back and land on `/app`.
+- [ ] **Sign in (Email)** — sign out, click **Continue with Email**, enter your address, open the email, click the link; you land on `/app` as the same user.
+- [ ] **Sign in (GitHub, if enabled)** — sign out, click **Continue with GitHub**; you are redirected back and land on `/app`.
 - [ ] **Generate (free tier)** — complete onboarding and generate a motion draft; it succeeds.
 - [ ] **Free limit** — generate a second draft; a third attempt shows an upgrade prompt (free limit is 2).
 - [ ] **Subscribe** — click **Upgrade to Pro** and complete the Stripe checkout.
@@ -193,10 +252,18 @@ It runs on PRs and pushes to `main` or `master`, installs dependencies with `npm
 
 ## Reference Tables
 
+### Auth Provider Callback URLs
+
+| Provider | Callback URL to register |
+| --- | --- |
+| Google | `https://<YOUR_DOMAIN>/api/auth/callback/google` |
+| GitHub | `https://<YOUR_DOMAIN>/api/auth/callback/github` |
+| Resend (email) | handled internally — no external registration needed |
+
 ### GitHub OAuth App
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Homepage URL | `https://<YOUR_DOMAIN>` |
 | Authorization callback URL | `https://<YOUR_DOMAIN>/api/auth/callback/github` |
 

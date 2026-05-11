@@ -174,7 +174,7 @@ export async function generateOnboardingDraftAction(
 async function completeOnboarding() {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   await prisma.user.update({

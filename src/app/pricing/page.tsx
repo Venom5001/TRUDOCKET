@@ -36,7 +36,7 @@ export default async function PricingPage() {
               </Link>
             ) : (
               <Link
-                href="/api/auth/signin"
+                href="/signin"
                 className="block w-full text-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg font-semibold transition-colors"
               >
                 Get Started

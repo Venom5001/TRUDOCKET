@@ -6,7 +6,9 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   if (nextUrl.pathname.startsWith("/app") && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/api/auth/signin", nextUrl));
+    const signInUrl = new URL("/signin", nextUrl);
+    signInUrl.searchParams.set("callbackUrl", nextUrl.pathname + nextUrl.search);
+    return NextResponse.redirect(signInUrl);
   }
 
   return NextResponse.next();

@@ -25,7 +25,7 @@ export default async function DocumentDetailPage({
 }) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   const { id } = await params;

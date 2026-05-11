@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function CreateMotionPage() {
   const session = await auth();
   if (!session?.user) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   const entitlements = await getUserEntitlements();

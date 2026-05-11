@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function AppPage() {
   const session = await auth();
   if (!session?.user) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   const user = await prisma.user.findUnique({

@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const session = await auth();
-  const ctaHref = session ? "/app" : "/api/auth/signin";
+  const ctaHref = session ? "/app" : "/signin";
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white px-4">
