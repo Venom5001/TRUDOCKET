@@ -233,7 +233,7 @@ Verify the full auth → generate → subscribe → Pro path after each producti
 - [ ] **Sign in (Email)** — sign out, click **Continue with Email**, enter your address, open the email, click the link; you land on `/app` as the same user.
 - [ ] **Sign in (GitHub, if enabled)** — sign out, click **Continue with GitHub**; you are redirected back and land on `/app`.
 - [ ] **Generate (free tier)** — complete onboarding and generate a motion draft; it succeeds.
-- [ ] **Free limit** — generate a second draft; a third attempt shows an upgrade prompt (free limit is 2).
+- [ ] **Free limit** — attempt a second draft; the app shows an upgrade prompt (free limit is 1).
 - [ ] **Subscribe** — click **Upgrade to Pro** and complete the Stripe checkout.
 - [ ] **Redirect** — after checkout you land on `/app/billing?success=1`.
 - [ ] **Webhook delivery** — in the Stripe Dashboard under **Webhooks → your endpoint**, confirm `checkout.session.completed` was delivered and returned HTTP `200`.

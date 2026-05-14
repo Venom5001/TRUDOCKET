@@ -8,6 +8,7 @@ import {
   QuestionsState,
 } from "./actions";
 import type { CaseLawSource } from "@/lib/services/motion-generator";
+import { FREE_GENERATION_LIMIT } from "@/lib/entitlements";
 import Link from "next/link";
 
 interface Props {
@@ -187,8 +188,8 @@ export function CreateMotionForm({
         <p className="text-2xl">🔒</p>
         <h2 className="text-xl font-semibold">Free limit reached</h2>
         <p className="text-gray-400">
-          You&apos;ve used all 2 free generations. Upgrade to Pro for unlimited
-          motion drafts.
+          You&apos;ve used your free draft. Upgrade to Pro to keep drafting,
+          save history, and unlock citations.
         </p>
         <Link
           href="/pricing"
@@ -207,7 +208,7 @@ export function CreateMotionForm({
       {/* Generation limit banner */}
       {!isPro && generationsRemaining !== null && (
         <div className="bg-indigo-950/40 border border-indigo-700/50 rounded-lg p-3 text-sm text-indigo-300">
-          Free plan: {generationsRemaining} of 2 generation
+          Free plan: {generationsRemaining} of {FREE_GENERATION_LIMIT} generation
           {generationsRemaining === 1 ? "" : "s"} remaining.{" "}
           <Link href="/pricing" className="underline hover:text-indigo-200">
             Upgrade for unlimited.

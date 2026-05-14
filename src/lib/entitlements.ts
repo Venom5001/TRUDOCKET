@@ -3,7 +3,7 @@ import { prisma } from "./prisma";
 import { isPro } from "./stripe";
 import { getUserSubscription } from "./subscription";
 
-export const FREE_GENERATION_LIMIT = 2;
+export const FREE_GENERATION_LIMIT = 1;
 
 export interface UserEntitlements {
   userId: string;

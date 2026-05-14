@@ -68,8 +68,8 @@ export default async function HomePage() {
         {/* Bottom disclaimer */}
         <p className="text-xs text-gray-600 pt-2">
           TruDocket generates drafting templates only. Always review with a
-          licensed attorney before filing. 2 free drafts — no credit card
-          required.
+          licensed attorney before filing. Your first draft is free — no
+          credit card required.
         </p>
       </div>
     </main>

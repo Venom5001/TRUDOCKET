@@ -12,7 +12,7 @@ export default async function PricingPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Simple Pricing</h1>
           <p className="text-gray-400 text-lg">
-            Start free with 2 motion drafts. Upgrade for unlimited access.
+            Try TruDocket with your first draft free. Upgrade for unlimited access.
           </p>
         </div>
 
@@ -22,7 +22,7 @@ export default async function PricingPage() {
             <p className="text-4xl font-bold mb-1">$0</p>
             <p className="text-gray-400 mb-6">per month</p>
             <ul className="space-y-2 mb-8">
-              <li className="text-gray-300">✓ 2 motion drafts total</li>
+              <li className="text-gray-300">✓ 1 motion draft (free)</li>
               <li className="text-gray-300">✓ Structured draft output</li>
               <li className="text-gray-300 text-gray-500">✗ Document history</li>
               <li className="text-gray-300 text-gray-500">✗ Case management</li>

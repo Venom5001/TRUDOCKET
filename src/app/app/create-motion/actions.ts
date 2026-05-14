@@ -88,7 +88,7 @@ export async function createMotionAction(
     return {
       status: "error",
       error:
-        "You've used both free drafts. Upgrade to Pro to keep generating unlimited motion drafts.",
+        "You've used your free draft. Upgrade to Pro to keep drafting, save history, and unlock citations.",
     };
   }
 

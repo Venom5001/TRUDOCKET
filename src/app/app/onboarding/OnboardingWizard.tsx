@@ -11,6 +11,7 @@ import {
   QuestionsState,
 } from "./actions";
 import type { OnboardingInputs } from "@/lib/services/motion-validation";
+import { FREE_GENERATION_LIMIT } from "@/lib/entitlements";
 import Link from "next/link";
 
 const initialMain: ActionState = { status: "idle" };
@@ -145,8 +146,8 @@ export function OnboardingWizard({ canGenerate, generationsRemaining, isPro }: P
 
       {!isPro && generationsRemaining !== null && (
         <div className="bg-indigo-950/30 border border-indigo-700/50 rounded-xl p-4 text-sm text-indigo-200">
-          Free plan: {generationsRemaining} of 2 generation
-          {generationsRemaining === 1 ? "" : "s"} remaining. 
+          Free plan: {generationsRemaining} of {FREE_GENERATION_LIMIT} generation
+          {generationsRemaining === 1 ? "" : "s"} remaining.
           <Link href="/pricing" className="underline hover:text-indigo-100">
             Upgrade for unlimited access.
           </Link>

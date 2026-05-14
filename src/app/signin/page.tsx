@@ -55,7 +55,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight">Sign in to TruDocket</h1>
           <p className="mt-2 text-sm text-gray-400">
-            2 free drafts — no credit card required.
+            First draft free — no credit card required.
           </p>
         </div>
 
