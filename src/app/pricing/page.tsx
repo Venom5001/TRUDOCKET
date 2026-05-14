@@ -11,8 +11,10 @@ export default async function PricingPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Simple Pricing</h1>
-          <p className="text-gray-400 text-lg">
-            Try TruDocket with your first draft free. Upgrade for unlimited access.
+          <p className="text-gray-400 text-lg">Your first draft is free.</p>
+          <p className="text-gray-400 text-lg mt-1">
+            Upgrade to Pro for unlimited drafting, document history, and case
+            organization.
           </p>
         </div>
 

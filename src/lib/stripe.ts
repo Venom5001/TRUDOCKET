@@ -32,13 +32,13 @@ export const PLANS = {
     get priceId() {
       return requireEnv("STRIPE_PRICE_PRO_MONTHLY_ID");
     },
-    price: "$9",
+    price: "$19",
     interval: "month",
     features: [
-      "Unlimited motion generations",
-      "Full document history",
-      "Case management",
-      "Priority support",
+      "Unlimited drafts",
+      "Document history",
+      "Case workspace",
+      "Priority drafting flow",
     ],
   },
 } as const;
