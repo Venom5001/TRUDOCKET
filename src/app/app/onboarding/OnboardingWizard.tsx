@@ -11,7 +11,7 @@ import {
   QuestionsState,
 } from "./actions";
 import type { OnboardingInputs } from "@/lib/services/motion-validation";
-import { FREE_GENERATION_LIMIT } from "@/lib/entitlements";
+import { FREE_GENERATION_LIMIT } from "@/lib/entitlement-constants";
 import Link from "next/link";
 
 const initialMain: ActionState = { status: "idle" };

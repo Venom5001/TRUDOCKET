@@ -1,9 +1,10 @@
+import "server-only";
+
 import { auth } from "./auth";
 import { prisma } from "./prisma";
 import { isPro } from "./stripe";
 import { getUserSubscription } from "./subscription";
-
-export const FREE_GENERATION_LIMIT = 1;
+import { FREE_GENERATION_LIMIT } from "./entitlement-constants";
 
 export interface UserEntitlements {
   userId: string;

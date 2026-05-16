@@ -1,7 +1,8 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { getUserEntitlements, FREE_GENERATION_LIMIT } from "@/lib/entitlements";
+import { getUserEntitlements } from "@/lib/entitlements";
+import { FREE_GENERATION_LIMIT } from "@/lib/entitlement-constants";
 import Link from "next/link";
 
 export const runtime = "nodejs";

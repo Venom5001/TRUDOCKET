@@ -8,7 +8,7 @@ import {
   QuestionsState,
 } from "./actions";
 import type { CaseLawSource } from "@/lib/services/motion-generator";
-import { FREE_GENERATION_LIMIT } from "@/lib/entitlements";
+import { FREE_GENERATION_LIMIT } from "@/lib/entitlement-constants";
 import Link from "next/link";
 
 interface Props {
